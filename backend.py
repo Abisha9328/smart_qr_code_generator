@@ -2,9 +2,14 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from pymongo import MongoClient
+from dotenv import load_dotenv
+import os
 
-# Replace with your actual MongoDB connection string
-MONGO_URI = "mongodb+srv://abisha99448393:O23Rfl2kUVSFZo36@cluster0.imqhe15.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+# Load .env file
+load_dotenv()
+
+# Get MONGO_URI from environment
+MONGO_URI = os.getenv("MONGO_URI")
 
 
 # MongoDB setup
