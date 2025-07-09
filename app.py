@@ -22,7 +22,8 @@ if st.button("Generate QR Code"):
         save_data(data)
 
         # Create short URL (e.g., http://localhost:8000/r/abc123)
-        short_url = f"http://localhost:8000/r/{short_code}"
+        short_url = "https://qr-redirect.onrender.com/r/{}".format(short_code)
+
 
         # Generate QR encoding the short URL
         qr = qrcode.QRCode(box_size=10, border=4)
