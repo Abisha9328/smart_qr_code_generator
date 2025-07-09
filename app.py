@@ -21,7 +21,9 @@ if st.button("Generate QR Code"):
         data[short_code] = {"original_url": text, "scan_count": 0}
         save_data(data)
 
-        
+        # Create short URL (e.g., http://localhost:8000/r/abc123)
+        short_url = f"http://localhost:8000/r/{short_code}"
+
         # Generate QR encoding the short URL
         qr = qrcode.QRCode(box_size=10, border=4)
         qr.add_data(short_url)
