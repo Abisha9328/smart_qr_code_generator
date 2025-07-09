@@ -1,0 +1,30 @@
+{
+    "abc123": {
+        "original_url": "https://example.com",
+        "scan_count": 0
+    },
+    "qHRwQv": {
+        "original_url": "www.qrcode.com",
+        "scan_count": 1
+    },
+    "OJqRAn": {
+        "original_url": "www.myntrs.com",
+        "scan_count": 0
+    },
+    "KOBcFz": {
+        "original_url": "www.sxcce.com",
+        "scan_count": 0
+    },
+    "vNmH14": {
+        "original_url": "www.sxcce.com",
+        "scan_count": 0
+    },
+    "kexLyd": {
+        "original_url": "www.flipkart.com",
+        "scan_count": 0
+    },
+    "bHMwmt": {
+        "original_url": "www.amazon.com",
+        "scan_count": 0
+    }
+}
