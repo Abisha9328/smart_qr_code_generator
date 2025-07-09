@@ -18,22 +18,25 @@ if st.button("Generate QR Code"):
         # Generate unique short code
         short_code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
 
-        # Create short URL for QR code
+        # Create short URL
         short_url = f"https://smart-qr-backend.onrender.com/r/{short_code}"
 
         # Save mapping via FastAPI backend
         api_url = "https://smart-qr-backend.onrender.com/api/create"
         payload = {"short_code": short_code, "original_url": text}
-        response = requests.post(api_url, json=payload)
 
-        if response.status_code == 200:
-            st.success("Short URL created successfully!")
-        else:
-            try:
-                error_detail = response.json().get("detail", "Unknown error")
-            except Exception:
-                error_detail = response.text
-            st.error("Error creating short URL: " + error_detail)
+        try:
+            response = requests.post(api_url, json=payload)
+            if response.status_code == 200:
+                st.success("Short URL created successfully!")
+            else:
+                try:
+                    error_detail = response.json().get("detail", "Unknown error")
+                except Exception:
+                    error_detail = response.text
+                st.error(f"Error creating short URL: {error_detail}")
+        except Exception as e:
+            st.error(f"Request failed: {e}")
 
         # Generate QR encoding the short URL
         qr = qrcode.QRCode(box_size=10, border=4)
@@ -53,7 +56,7 @@ if st.button("Generate QR Code"):
     else:
         st.warning("Please enter a URL.")
 
-# Analytics section (optional, requires backend API)
+# Analytics section (optional)
 if st.checkbox("Show Analytics"):
     st.subheader("📊 Scan Analytics")
 
