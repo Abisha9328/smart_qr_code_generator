@@ -69,6 +69,7 @@ Deploy a backend API to handle redirects.
 Add QR expiration dates or limits.
 
 # 📝 License
+GNU General Public License v3.0
 
 # DEMO
 Live app: https://smartqrcodegenerator-xz2anerh3bbj6zcpkket8w.streamlit.app/
