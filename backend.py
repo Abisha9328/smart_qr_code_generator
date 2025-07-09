@@ -1,26 +1,33 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
-from pymongo import MongoClient
+from pymongo import MongoClient, errors
 from dotenv import load_dotenv
 import os
 
-# Load .env file
+# Load .env file if present
 load_dotenv()
 
-# Get MONGO_URI from environment
+# Get MONGO_URI from environment variable
 MONGO_URI = os.getenv("MONGO_URI")
 
+if not MONGO_URI:
+    raise RuntimeError("MONGO_URI is not set. Please set it in your .env or Render Environment Variables.")
 
 # MongoDB setup
-client = MongoClient(MONGO_URI)
-db = client["qrdb"]  # Database name
-collection = db["shorturls"]  # Collection name
+try:
+    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+    # Force connection test on startup
+    client.server_info()
+except errors.ServerSelectionTimeoutError:
+    raise RuntimeError("Could not connect to MongoDB. Check your MONGO_URI and network settings.")
 
-# FastAPI app
+db = client["qrdb"]
+collection = db["shorturls"]
+
 app = FastAPI()
 
-# Pydantic model for creating short URLs
+# Pydantic model for POST requests
 class ShortURLRequest(BaseModel):
     short_code: str
     original_url: str
@@ -31,11 +38,9 @@ def home():
 
 @app.post("/api/create")
 def create_short_url(request: ShortURLRequest):
-    # Check if short code already exists
     if collection.find_one({"short_code": request.short_code}):
         raise HTTPException(status_code=400, detail="Short code already exists.")
 
-    # Insert the new short code mapping
     collection.insert_one({
         "short_code": request.short_code,
         "original_url": request.original_url,
@@ -49,21 +54,24 @@ def redirect(short_code: str):
     if not doc:
         raise HTTPException(status_code=404, detail="Short URL not found.")
 
-    # Increment scan count
     collection.update_one(
         {"short_code": short_code},
         {"$inc": {"scan_count": 1}}
     )
-
     return RedirectResponse(url=doc["original_url"])
 
 @app.get("/api/data")
 def get_all_data():
     data = {}
-    for doc in collection.find():
-        code = doc["short_code"]
-        data[code] = {
-            "original_url": doc["original_url"],
-            "scan_count": doc["scan_count"]
-        }
+    try:
+        for doc in collection.find():
+            code = doc.get("short_code")
+            if not code:
+                continue
+            data[code] = {
+                "original_url": doc.get("original_url", ""),
+                "scan_count": doc.get("scan_count", 0)
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     return data
