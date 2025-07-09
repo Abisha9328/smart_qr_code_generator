@@ -6,6 +6,7 @@ from pymongo import MongoClient
 # Replace with your actual MongoDB connection string
 MONGO_URI = "mongodb+srv://abisha99448393:O23Rfl2kUVSFZo36@cluster0.imqhe15.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
+
 # MongoDB setup
 client = MongoClient(MONGO_URI)
 db = client["qrdb"]  # Database name
