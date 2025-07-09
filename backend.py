@@ -1,4 +1,4 @@
-rom fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 from qr_utils import load_data, save_data
 
