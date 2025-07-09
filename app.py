@@ -3,8 +3,9 @@ import qrcode
 from io import BytesIO
 from PIL import Image
 import requests
+import random
+import string
 
-# Title
 st.title("🔗 Smart QR Code Generator + Tracker")
 
 # Input fields
@@ -12,13 +13,13 @@ text = st.text_input("Enter URL:")
 fg_color = st.color_picker("QR Foreground Color", "#000000")
 bg_color = st.color_picker("QR Background Color", "#ffffff")
 
-# Generate QR Code button
 if st.button("Generate QR Code"):
     if text:
         # Generate unique short code
-        import random
-        import string
         short_code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+
+        # Create short URL for QR code
+        short_url = f"https://smart-qr-backend.onrender.com/r/{short_code}"
 
         # Save mapping via FastAPI backend
         api_url = "https://smart-qr-backend.onrender.com/api/create"
@@ -28,12 +29,13 @@ if st.button("Generate QR Code"):
         if response.status_code == 200:
             st.success("Short URL created successfully!")
         else:
-            st.error("Error creating short URL: " + response.json().get("detail", "Unknown error"))
+            try:
+                error_detail = response.json().get("detail", "Unknown error")
+            except Exception:
+                error_detail = response.text
+            st.error("Error creating short URL: " + error_detail)
 
-        # Create short URL for QR code
-        short_url = f"https://smart-qr-backend.onrender.com/r/{short_code}"
-
-        # Generate QR code encoding the short URL
+        # Generate QR encoding the short URL
         qr = qrcode.QRCode(box_size=10, border=4)
         qr.add_data(short_url)
         qr.make(fit=True)
@@ -51,14 +53,14 @@ if st.button("Generate QR Code"):
     else:
         st.warning("Please enter a URL.")
 
-# Display scan analytics
+# Analytics section (optional, requires backend API)
 if st.checkbox("Show Analytics"):
     st.subheader("📊 Scan Analytics")
 
-    # Fetch all data from FastAPI backend
     try:
         analytics_url = "https://smart-qr-backend.onrender.com/api/data"
         response = requests.get(analytics_url)
+
         if response.status_code == 200:
             data = response.json()
             if data:
@@ -72,4 +74,4 @@ if st.checkbox("Show Analytics"):
         else:
             st.error("Could not fetch analytics data.")
     except Exception as e:
-        st.error(f"Error: {e}")
+        st.error(f"Error fetching analytics: {e}")
