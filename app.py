@@ -1,16 +1,13 @@
 import streamlit as st
 import qrcode
 from io import BytesIO
-from PIL import Image
 
 st.title("🔗 Simple QR Code Generator")
 
-# Input fields
-text = st.text_input("Enter URL to encode:")
+text = st.text_input("Enter the URL to encode:")
 fg_color = st.color_picker("QR Foreground Color", "#000000")
 bg_color = st.color_picker("QR Background Color", "#ffffff")
 
-# Generate QR Code
 if st.button("Generate QR Code"):
     if text:
         qr = qrcode.QRCode(box_size=10, border=4)
@@ -18,15 +15,11 @@ if st.button("Generate QR Code"):
         qr.make(fit=True)
         img = qr.make_image(fill_color=fg_color, back_color=bg_color)
 
-        # Convert to bytes for download
         buf = BytesIO()
         img.save(buf, format="PNG")
         byte_im = buf.getvalue()
 
-        # Show and download
         st.image(byte_im, caption="Your QR Code")
         st.download_button("Download QR", byte_im, file_name="qr_code.png")
     else:
         st.warning("Please enter a URL.")
-
-# No analytics, no backend, no short URLs
